@@ -1,24 +1,35 @@
 "use client";
 
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { parseEther } from "viem";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { TIPJAR_ABI, TIPJAR_ADDRESS } from "@/lib/tipjar-abi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export function TipForm() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
 
   const { writeContractAsync, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash: txHash ?? undefined,
   });
+  const { data: owner } = useReadContract({
+    address: TIPJAR_ADDRESS || undefined,
+    abi: TIPJAR_ABI,
+    functionName: "owner",
+  });
+  useEffect(() => {
+    if (txHash) setIsTxModalOpen(true);
+  }, [txHash]);
+
 
   const amountWei = useMemo(() => {
     try {
@@ -31,7 +42,8 @@ export function TipForm() {
     }
   }, [amount]);
 
-  const canSubmit = isConnected && !!TIPJAR_ADDRESS && !!amountWei && name.trim().length > 0;
+  const isOwner = !!(address && owner && address.toLowerCase() === (owner as `0x${string}`).toLowerCase());
+  const canSubmit = isConnected && !!TIPJAR_ADDRESS && !!amountWei && name.trim().length > 0 && !isOwner;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -76,6 +88,7 @@ export function TipForm() {
               onChange={(e) => setName(e.target.value)}
               maxLength={64}
               required
+              disabled={isOwner}
             />
           </div>
           <div className="space-y-2">
@@ -87,6 +100,7 @@ export function TipForm() {
               onChange={(e) => setMessage(e.target.value)}
               maxLength={280}
               rows={3}
+              disabled={isOwner}
             />
           </div>
           <div className="space-y-2">
@@ -98,18 +112,48 @@ export function TipForm() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
+              disabled={isOwner}
             />
-            <p className="text-xs text-muted-foreground">Up to 18 decimals. Example: 0.05</p>
+            <p className="text-xs text-muted-foreground">Example: 0.05</p>
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
-          {txHash && (
-            <p className="text-sm">
-              Submitted. Tx: <a className="underline" href={`https://celoscan.io/tx/${txHash}`} target="_blank" rel="noreferrer">{txHash}</a>
-            </p>
-          )}
+
+          <Dialog.Root open={isTxModalOpen} onOpenChange={setIsTxModalOpen}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 bg-black/40" />
+              <Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-900">
+                <Dialog.Title className="text-lg font-semibold">Transaction Submitted</Dialog.Title>
+                <Dialog.Description className="mt-2 text-sm text-muted-foreground">
+                  Your tip transaction has been submitted. You can view it on the block explorer.
+                </Dialog.Description>
+                {txHash && (
+                  <p className="mt-4 break-all text-sm">
+                    Tx Hash: {" "}
+                    <a
+                      className="underline"
+                      href={`https://celoscan.io/tx/${txHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {txHash}
+                    </a>
+                  </p>
+                )}
+                <div className="mt-6 flex justify-end gap-2">
+                  <Dialog.Close asChild>
+                    <Button variant="secondary" type="button">Close</Button>
+                  </Dialog.Close>
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
           {isConfirming && <p className="text-sm">Waiting for confirmation…</p>}
           {isConfirmed && <p className="text-sm text-green-600">Confirmed!</p>}
+
+          {isOwner && (
+            <p className="text-xs text-amber-600">Owner cannot tip their own contract.</p>
+          )}
 
           <div className="pt-2">
             <Button type="submit" disabled={!canSubmit || isPending}>

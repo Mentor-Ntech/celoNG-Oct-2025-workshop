@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 contract TipJar {
-    event NewMemo(
+    event NewTip(
         address indexed from,
         uint256 timestamp,
         string name,
@@ -11,7 +11,7 @@ contract TipJar {
         string message
     );
 
-    struct Memo {
+    struct Tip {
         address from;
         uint256 timestamp;
         string name;
@@ -21,7 +21,7 @@ contract TipJar {
 
     address payable public owner;
 
-    Memo[] memos;
+    Tip[] tips;
 
     modifier ownerOnly() {
         require(msg.sender == owner, "Not the owner");
@@ -33,25 +33,23 @@ contract TipJar {
     }
 
     /**
-     * @dev fetches all stored memos
+     * @dev fetches all stored tips
      */
-    function getMemos() public view returns (Memo[] memory) {
-        return memos;
+    function getTips() public view returns (Tip[] memory) {
+        return tips;
     }
 
     /**
-     * @dev tip the owner (sends celo tip and leaves a memo)
+     * @dev tip the owner (sends celo tip and leaves a tip)
      * @param _name name of the tipper
      * @param _message a nice message from the purchaser
      */
     function tip(string memory _name, string memory _message) public payable {
         require(msg.value > 0, "cannot tip for free!");
 
-        memos.push(
-            Memo(msg.sender, block.timestamp, _name, msg.value, _message)
-        );
+        tips.push(Tip(msg.sender, block.timestamp, _name, msg.value, _message));
 
-        emit NewMemo(msg.sender, block.timestamp, _name, msg.value, _message);
+        emit NewTip(msg.sender, block.timestamp, _name, msg.value, _message);
     }
 
     /**

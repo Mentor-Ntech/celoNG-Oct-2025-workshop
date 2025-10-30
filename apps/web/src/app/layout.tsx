@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-import { Navbar } from '@/components/navbar';
-import { WalletProvider } from "@/components/wallet-provider"
+import { Navbar } from "@/components/navbar";
+import { WalletProvider } from "@/components/wallet-provider";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'celo-easyshare',
-  description: 'A new Celo blockchain project',
+  title: "celo-tip",
+  description: "A new Celo blockchain project",
 };
 
 export default function RootLayout({
@@ -24,9 +24,7 @@ export default function RootLayout({
         <div className="relative flex min-h-screen flex-col">
           <WalletProvider>
             <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </WalletProvider>
         </div>
       </body>

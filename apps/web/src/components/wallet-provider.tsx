@@ -1,13 +1,15 @@
 "use client";
 
-import { RainbowKitProvider, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  RainbowKitProvider,
+  connectorsForWallets,
+} from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { injectedWallet } from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { WagmiProvider, createConfig, http, useConnect } from "wagmi";
-import { celo, celoAlfajores } from "wagmi/chains";
-import { ConnectButton } from "./connect-button";
+import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
 
 const connectors = connectorsForWallets(
   [
@@ -17,17 +19,18 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "celo-easyshare",
+    appName: "celo-tip",
     projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID!,
   }
 );
 
 const wagmiConfig = createConfig({
-  chains: [celo, celoAlfajores],
+  chains: [celo, celoAlfajores, celoSepolia],
   connectors,
   transports: {
     [celo.id]: http(),
     [celoAlfajores.id]: http(),
+    [celoSepolia.id]: http(),
   },
   ssr: true,
 });

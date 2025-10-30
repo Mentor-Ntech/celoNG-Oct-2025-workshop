@@ -1,47 +1,139 @@
 export const TIPJAR_ABI = [
   {
-    type: "event",
-    name: "NewMemo",
-    inputs: [
-      { name: "from", type: "address", indexed: true },
-      { name: "timestamp", type: "uint256", indexed: false },
-      { name: "name", type: "string", indexed: false },
-      { name: "amount", type: "uint256", indexed: false },
-      { name: "message", type: "string", indexed: false },
-    ],
-    anonymous: false,
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    type: "function",
-    stateMutability: "view",
-    name: "getMemos",
-    inputs: [],
-    outputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        name: "",
-        type: "tuple[]",
-        components: [
-          { name: "from", type: "address" },
-          { name: "timestamp", type: "uint256" },
-          { name: "name", type: "string" },
-          { name: "amount", type: "uint256" },
-          { name: "message", type: "string" },
-        ],
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
       },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      }
     ],
+    "name": "NewTip",
+    "type": "event"
   },
   {
-    type: "function",
-    stateMutability: "payable",
-    name: "tip",
-    inputs: [
-      { name: "_name", type: "string" },
-      { name: "_message", type: "string" },
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    outputs: [],
+    "name": "changeOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
+  {
+    "inputs": [],
+    "name": "getTips",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "message",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TipJar.Tip[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address payable",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_message",
+        "type": "string"
+      }
+    ],
+    "name": "tip",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawTips",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ] as const;
 
-export const TIPJAR_ADDRESS = (process.env.NEXT_PUBLIC_TIPJAR_ADDRESS || "") as `0x${string}`;
+export const TIPJAR_ADDRESS = (process.env.NEXT_PUBLIC_TIP_JAR_ADDRESS || "") as `0x${string}`;
 
 
