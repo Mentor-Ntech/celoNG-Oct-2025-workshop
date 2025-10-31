@@ -1,4 +1,4 @@
-# celo-easyshare
+# celo-tip
 
 A new Celo blockchain project
 
@@ -7,11 +7,13 @@ A modern Celo blockchain application built with Next.js, TypeScript, and Turbore
 ## Getting Started
 
 1. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 2. Start the development server:
+
    ```bash
    pnpm dev
    ```
